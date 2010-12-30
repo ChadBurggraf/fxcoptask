@@ -5,6 +5,8 @@ This is an FxCop task for MSBuild, which can be used to fail builds when FxCop w
 
 ## Usage
 
+**[Download the binary package](https://github.com/ChadBurggraf/fxcoptask/downloads)**
+
 The task will automatically try to find an FxCop installation on your machine. It will favor the one installed as part of the team tools with Visual Studio 2010. This means that if you're using the task on a pre-4.0 project you'll get a bunch of extra warnings by default. You can override the FxCop location as you see fit.
 
 To use, first include the task in your MSBuild project file:
