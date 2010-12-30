@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TestRunConfiguration name="Local Test Run" id="44b52e34-a035-4186-b689-618093da62aa" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2006">
+  <Description>This is a default test run configuration for a local test run.</Description>
+  <Deployment>
+    <DeploymentItem filename="FxCopTask.Test\FxCopTask.xml" />
+  </Deployment>
+  <TestTypeSpecific />
+</TestRunConfiguration>

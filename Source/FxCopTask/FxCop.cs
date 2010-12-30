@@ -10,8 +10,11 @@ namespace FxCopTask
 {
     using System;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.IO;
+    using System.Linq;
+    using System.Security.Permissions;
     using System.Text;
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
@@ -19,6 +22,7 @@ namespace FxCopTask
     /// <summary>
     /// Executes FxCop from MSBuild.
     /// </summary>
+    [HostProtectionAttribute(SecurityAction.LinkDemand, SharedState = true, Synchronization = true, ExternalProcessMgmt = true, SelfAffectingProcessMgmt = true)]
     public sealed class FxCop : Task
     {
         /// <summary>
@@ -28,14 +32,22 @@ namespace FxCopTask
         {
             this.FailOnError = true;
             this.FailOnWarning = false;
-            this.RuleSet = "AllRules.ruleset";
 
             ProgramLocation location = ProgramLocation.FindDefault();
 
             if (location.Found)
             {
                 this.Executable = new TaskItem(location.Executable);
-                this.RuleSetDirectory = new TaskItem(location.RuleSetDirectory);
+
+                if (!String.IsNullOrEmpty(location.RuleSetDirectory))
+                {
+                    this.RuleSet = "AllRules.ruleset";
+                    this.RuleSetDirectory = new TaskItem(location.RuleSetDirectory);
+                }
+                else
+                {
+                    this.Rules = location.RuleAssemblies.Select(p => new TaskItem(p)).ToArray();
+                }
             }
         }
 
@@ -46,7 +58,7 @@ namespace FxCopTask
         public ITaskItem[] Assemblies { get; set; }
 
         /// <summary>
-        /// Gets or sets the path custom dictionary to pass to FxCop.
+        /// Gets or sets the path of the custom dictionary to pass to FxCop.
         /// </summary>
         public ITaskItem Dictionary { get; set; }
 
@@ -71,14 +83,19 @@ namespace FxCopTask
         public ITaskItem Output { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the rulset to use.
+        /// Gets or sets a collection of rule assemblies to use when running FxCop.
+        /// </summary>
+        public ITaskItem[] Rules { get; set; }
+
+        /// <summary>
+        /// Gets or sets the rule set to use, when not using rule assemblies.
         /// </summary>
         public string RuleSet { get; set; }
 
         /// <summary>
-        /// Gets or sets the path to the ruleset directory.
+        /// Gets or sets the rule set directory to use, when not using rule assemblies.
         /// </summary>
-        public ITaskItem RuleSetDirectory { get; set; }
+        public ITaskItem RuleSetDirectory { get; private set; }
 
         /// <summary>
         /// Gets the relative path of the given path string, compared to the currently environment directory.
@@ -87,6 +104,11 @@ namespace FxCopTask
         /// <returns>A relative path.</returns>
         public static string GetRelativePath(string path)
         {
+            if (String.IsNullOrEmpty(path))
+            {
+                throw new ArgumentNullException("path", "path must contain a value.");
+            }
+
             string currentDirectory = Directory.GetCurrentDirectory().ToUpperInvariant().TrimEnd('\\') + @"\";
 
             if (path.ToUpperInvariant().StartsWith(currentDirectory, StringComparison.Ordinal))
@@ -101,6 +123,9 @@ namespace FxCopTask
         /// Executes the task.
         /// </summary>
         /// <returns>True if the task succeeded, false otherwise.</returns>
+        [PermissionSetAttribute(SecurityAction.Demand, Name = "FullTrust")]
+        [SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", Justification = "There is no way I'm globalizing this.")]
+        [SuppressMessage("Microsoft.Usage", "CA2204:LiteralsShouldBeSpelledCorrectly", Justification = "It's funny that FxCop is not in the dictionary.")]
         public override bool Execute()
         {
             bool success = false;
@@ -112,9 +137,9 @@ namespace FxCopTask
             }
             else
             {
-                if (this.RuleSetDirectory == null)
+                if ((this.Rules == null || this.Rules.Length == 0) && (String.IsNullOrEmpty(this.RuleSet) || this.RuleSetDirectory == null))
                 {
-                    Log.LogError("RuleSetDirectory was not set, and FxCop could not be found in any standard installation locations.");
+                    Log.LogError("Either RuleSet and RuleSetDirectory must be set, or Rules must be set. FxCop could not be found in any standard installation locations to set these values automatically.");
                 }
                 else
                 {
@@ -178,22 +203,34 @@ namespace FxCopTask
         /// </summary>
         /// <param name="assemblyArgs">A string of prepared assembly arguments.</param>
         /// <returns>The created process.</returns>
+        [SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope", Justification = "The object is disposed by the caller of this method.")]
         private Process CreateProcess(string assemblyArgs)
         {
-            string arguments = String.Format(
+            StringBuilder args = new StringBuilder();
+            args.AppendFormat(
                 CultureInfo.InvariantCulture,
-                @"/q /iit /fo /igc /gac /rs:""={0}"" /rsd:""{1}"" /o:""{2}""",
-                this.RuleSet,
-                this.RuleSetDirectory.GetMetadata("FullPath"),
-                this.Output.GetMetadata("FullPath")
-            );
+                @"/q /iit /fo /igc /gac /o:""{0}"" {1}",
+                this.Output.GetMetadata("FullPath"),
+                assemblyArgs.TrimStart());
+
+            if (!String.IsNullOrEmpty(this.RuleSet) && this.RuleSetDirectory != null)
+            {
+                args.AppendFormat(CultureInfo.InvariantCulture, @" /rs:""={0}"" /rsd:""{1}""", this.RuleSet, this.RuleSetDirectory.GetMetadata("FullPath"));
+            }
+            else
+            {
+                foreach (ITaskItem rule in this.Rules)
+                {
+                    args.AppendFormat(CultureInfo.InvariantCulture, @" /r:""{0}""", rule.GetMetadata("FullPath"));
+                }
+            }
 
             if (this.Dictionary != null)
             {
-                arguments += String.Format(CultureInfo.InvariantCulture, @" /dic:""{0}""", Dictionary.GetMetadata("FullPath"));
+                args.AppendFormat(CultureInfo.InvariantCulture, @" /dic:""{0}""", this.Dictionary.GetMetadata("FullPath"));
             }
-            
-            ProcessStartInfo start = new ProcessStartInfo(this.Executable.GetMetadata("FullPath"), arguments + assemblyArgs)
+
+            ProcessStartInfo start = new ProcessStartInfo(this.Executable.GetMetadata("FullPath"), args.ToString())
             {
                 CreateNoWindow = true,
                 RedirectStandardError = true,
@@ -209,6 +246,7 @@ namespace FxCopTask
         /// Logs a process execution error for the given process to the build engine.
         /// </summary>
         /// <param name="process">The process to log the execution error for.</param>
+        [SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", Justification = "There is no way I'm globalizing this.")]
         private void LogExecutionError(Process process)
         {
             string line;

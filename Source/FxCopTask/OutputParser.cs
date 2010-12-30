@@ -79,7 +79,12 @@ namespace FxCopTask
         /// <returns>The message's error code.</returns>
         public static string GetErrorCode(XElement message)
         {
-            return String.Concat(message.Attribute("CheckId"), ":", message.Attribute("Category"));
+            if (message == null)
+            {
+                throw new ArgumentNullException("message", "message cannot be null.");
+            }
+
+            return String.Concat((string)message.Attribute("CheckId"), ":", (string)message.Attribute("TypeName"));
         }
 
         /// <summary>
@@ -90,13 +95,27 @@ namespace FxCopTask
         /// <returns>The issue's file name.</returns>
         public static string GetFileName(string assembly, XElement issue)
         {
-            string result = assembly;
+            if (String.IsNullOrEmpty(assembly))
+            {
+                throw new ArgumentNullException("assembly", "assembly must contain a value.");
+            }
+
+            if (issue == null)
+            {
+                throw new ArgumentNullException("issue", "issue cannot be null.");
+            }
+
+            string result;
             string path = (string)issue.Attribute("Path");
             string file = (string)issue.Attribute("File");
 
             if (!String.IsNullOrEmpty(path) && !String.IsNullOrEmpty(file))
             {
                 result = Path.Combine(path, file);
+            }
+            else
+            {
+                result = Path.GetFileName(assembly);
             }
 
             return FxCop.GetRelativePath(result);
@@ -109,6 +128,11 @@ namespace FxCopTask
         /// <returns>The issue's level.</returns>
         public static string GetLevel(XElement issue)
         {
+            if (issue == null)
+            {
+                throw new ArgumentNullException("issue", "issue cannot be null.");
+            }
+
             return (string)issue.Attribute("Level");
         }
 
@@ -119,6 +143,11 @@ namespace FxCopTask
         /// <returns>The issue's line number.</returns>
         public static int GetLineNumber(XElement issue)
         {
+            if (issue == null)
+            {
+                throw new ArgumentNullException("issue", "issue cannot be null.");
+            }
+
             string line = (string)issue.Attribute("Line");
             int result = 0;
 
@@ -135,8 +164,13 @@ namespace FxCopTask
         /// </summary>
         /// <param name="issue">The issue XML element to get the message from.</param>
         /// <returns>The issue's message.</returns>
-        public static string GetMessage(XElement issue)
+        public static string GetMessage(XContainer issue)
         {
+            if (issue == null)
+            {
+                throw new ArgumentNullException("issue", "issue cannot be null.");
+            }
+
             return HttpUtility.HtmlDecode((string)issue.FirstNode.ToString().Replace("\r\n", "\n"));
         }
 
@@ -185,7 +219,7 @@ namespace FxCopTask
                 }
             }
 
-            return (!((hasErrors && failOnError) || (hasWarnings && failOnWarning)));
+            return !((hasErrors && failOnError) || (hasWarnings && failOnWarning));
         }
     }
 }

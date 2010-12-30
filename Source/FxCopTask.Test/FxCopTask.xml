@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="c:\program files\microsoft fxcop 10.0\Xml\FxCopReport.xsl"?>
+<FxCopReport Version="10.0">
+ <Targets>
+  <Target Name="$(ProjectDir)/FxCopTask/bin/Debug/FxCopTask.dll">
+   <Modules>
+    <Module Name="fxcoptask.dll">
+     <Messages>
+      <Message TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210" Status="Active" Created="2010-12-29 19:57:09Z" FixCategory="NonBreaking">
+       <Issue Name="NoStrongName" Certainty="95" Level="CriticalError">Sign 'FxCopTask.dll' with a strong name key.</Issue>
+      </Message>
+      <Message TypeName="MarkAssembliesWithClsCompliant" Category="Microsoft.Design" CheckId="CA1014" Status="Active" Created="2010-12-29 19:57:09Z" FixCategory="NonBreaking">
+       <Issue Certainty="95" Level="Error">Mark 'FxCopTask.dll' with CLSCompliant(true) because it exposes externally visible types.</Issue>
+      </Message>
+     </Messages>
+     <Namespaces>
+      <Namespace Name="FxCopTask">
+       <Types>
+        <Type Name="FxCop" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#CreateProcess(System.String)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="DoNotIndirectlyExposeMethodsWithLinkDemands" Category="Microsoft.Security" CheckId="CA2122" Status="Active" Created="2010-12-29 19:57:09Z" FixCategory="NonBreaking">
+             <Issue Certainty="33" Level="CriticalError" Path="C:\Projects\FxCopTask\FxCopTask" File="FxCop.cs" Line="176">'FxCop.CreateProcess(string)' calls into 'Process.StartInfo.set(ProcessStartInfo)' which has a LinkDemand. By making this call, 'Process.StartInfo.set(ProcessStartInfo)' is indirectly exposed to user code. Review the following call stack that might expose a way to circumvent security protection: &#xD;&#xA;   -&gt;'FxCop.CreateProcess(string)'&#xD;&#xA;   -&gt;'FxCop.CreateProcess(string)'&#xD;&#xA;   -&gt;'FxCop.Execute()'</Issue>
+             <Issue Certainty="33" Level="CriticalError" Path="C:\Projects\FxCopTask\FxCopTask" File="FxCop.cs" Line="176">'FxCop.CreateProcess(string)' calls into 'ProcessStartInfo.CreateNoWindow.set(bool)' which has a LinkDemand. By making this call, 'ProcessStartInfo.CreateNoWindow.set(bool)' is indirectly exposed to user code. Review the following call stack that might expose a way to circumvent security protection: &#xD;&#xA;   -&gt;'FxCop.CreateProcess(string)'&#xD;&#xA;   -&gt;'FxCop.CreateProcess(string)'&#xD;&#xA;   -&gt;'FxCop.Execute()'</Issue>
+             <Issue Certainty="33" Level="CriticalError" Path="C:\Projects\FxCopTask\FxCopTask" File="FxCop.cs" Line="176">'FxCop.CreateProcess(string)' calls into 'ProcessStartInfo.RedirectStandardError.set(bool)' which has a LinkDemand. By making this call, 'ProcessStartInfo.RedirectStandardError.set(bool)' is indirectly exposed to user code. Review the following call stack that might expose a way to circumvent security protection: &#xD;&#xA;   -&gt;'FxCop.CreateProcess(string)'&#xD;&#xA;   -&gt;'FxCop.CreateProcess(string)'&#xD;&#xA;   -&gt;'FxCop.Execute()'</Issue>
+             <Issue Certainty="33" Level="CriticalError" Path="C:\Projects\FxCopTask\FxCopTask" File="FxCop.cs" Line="176">'FxCop.CreateProcess(string)' calls into 'ProcessStartInfo.RedirectStandardOutput.set(bool)' which has a LinkDemand. By making this call, 'ProcessStartInfo.RedirectStandardOutput.set(bool)' is indirectly exposed to user code. Review the following call stack that might expose a way to circumvent security protection: &#xD;&#xA;   -&gt;'FxCop.CreateProcess(string)'&#xD;&#xA;   -&gt;'FxCop.CreateProcess(string)'&#xD;&#xA;   -&gt;'FxCop.Execute()'</Issue>
+             <Issue Certainty="33" Level="CriticalError" Path="C:\Projects\FxCopTask\FxCopTask" File="FxCop.cs" Line="176">'FxCop.CreateProcess(string)' calls into 'ProcessStartInfo.UseShellExecute.set(bool)' which has a LinkDemand. By making this call, 'ProcessStartInfo.UseShellExecute.set(bool)' is indirectly exposed to user code. Review the following call stack that might expose a way to circumvent security protection: &#xD;&#xA;   -&gt;'FxCop.CreateProcess(string)'&#xD;&#xA;   -&gt;'FxCop.CreateProcess(string)'&#xD;&#xA;   -&gt;'FxCop.Execute()'</Issue>
+             <Issue Certainty="33" Level="CriticalError" Path="C:\Projects\FxCopTask\FxCopTask" File="FxCop.cs" Line="176">'FxCop.CreateProcess(string)' calls into 'ProcessStartInfo.WindowStyle.set(ProcessWindowStyle)' which has a LinkDemand. By making this call, 'ProcessStartInfo.WindowStyle.set(ProcessWindowStyle)' is indirectly exposed to user code. Review the following call stack that might expose a way to circumvent security protection: &#xD;&#xA;   -&gt;'FxCop.CreateProcess(string)'&#xD;&#xA;   -&gt;'FxCop.CreateProcess(string)'&#xD;&#xA;   -&gt;'FxCop.Execute()'</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#Execute()" Kind="Method" Static="False" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="DoNotIndirectlyExposeMethodsWithLinkDemands" Category="Microsoft.Security" CheckId="CA2122" Status="Active" Created="2010-12-29 19:57:09Z" FixCategory="NonBreaking">
+             <Issue Certainty="33" Level="CriticalError" Path="C:\Projects\FxCopTask\FxCopTask" File="FxCop.cs" Line="99">'FxCop.Execute()' calls into 'Process.ExitCode.get()' which has a LinkDemand. By making this call, 'Process.ExitCode.get()' is indirectly exposed to user code. Review the following call stack that might expose a way to circumvent security protection: &#xD;&#xA;   -&gt;'FxCop.Execute()'&#xD;&#xA;   -&gt;'FxCop.Execute()'</Issue>
+             <Issue Certainty="33" Level="CriticalError" Path="C:\Projects\FxCopTask\FxCopTask" File="FxCop.cs" Line="99">'FxCop.Execute()' calls into 'Process.Start()' which has a LinkDemand. By making this call, 'Process.Start()' is indirectly exposed to user code. Review the following call stack that might expose a way to circumvent security protection: &#xD;&#xA;   -&gt;'FxCop.Execute()'&#xD;&#xA;   -&gt;'FxCop.Execute()'</Issue>
+             <Issue Certainty="33" Level="CriticalError" Path="C:\Projects\FxCopTask\FxCopTask" File="FxCop.cs" Line="99">'FxCop.Execute()' calls into 'Process.WaitForExit()' which has a LinkDemand. By making this call, 'Process.WaitForExit()' is indirectly exposed to user code. Review the following call stack that might expose a way to circumvent security protection: &#xD;&#xA;   -&gt;'FxCop.Execute()'&#xD;&#xA;   -&gt;'FxCop.Execute()'</Issue>
+            </Message>
+           </Messages>
+          </Member>
+          <Member Name="#LogExecutionError(System.Diagnostics.Process)" Kind="Method" Static="False" Accessibility="Private" ExternallyVisible="False">
+           <Messages>
+            <Message TypeName="DoNotIndirectlyExposeMethodsWithLinkDemands" Category="Microsoft.Security" CheckId="CA2122" Status="Active" Created="2010-12-29 19:57:09Z" FixCategory="NonBreaking">
+             <Issue Certainty="33" Level="CriticalError" Path="C:\Projects\FxCopTask\FxCopTask" File="FxCop.cs" Line="207">'FxCop.LogExecutionError(Process)' calls into 'Process.ExitCode.get()' which has a LinkDemand. By making this call, 'Process.ExitCode.get()' is indirectly exposed to user code. Review the following call stack that might expose a way to circumvent security protection: &#xD;&#xA;   -&gt;'FxCop.LogExecutionError(Process)'&#xD;&#xA;   -&gt;'FxCop.LogExecutionError(Process)'&#xD;&#xA;   -&gt;'FxCop.Execute()'</Issue>
+             <Issue Certainty="33" Level="CriticalError" Path="C:\Projects\FxCopTask\FxCopTask" File="FxCop.cs" Line="207">'FxCop.LogExecutionError(Process)' calls into 'Process.StandardError.get()' which has a LinkDemand. By making this call, 'Process.StandardError.get()' is indirectly exposed to user code. Review the following call stack that might expose a way to circumvent security protection: &#xD;&#xA;   -&gt;'FxCop.LogExecutionError(Process)'&#xD;&#xA;   -&gt;'FxCop.LogExecutionError(Process)'&#xD;&#xA;   -&gt;'FxCop.Execute()'</Issue>
+             <Issue Certainty="33" Level="CriticalError" Path="C:\Projects\FxCopTask\FxCopTask" File="FxCop.cs" Line="207">'FxCop.LogExecutionError(Process)' calls into 'Process.StandardOutput.get()' which has a LinkDemand. By making this call, 'Process.StandardOutput.get()' is indirectly exposed to user code. Review the following call stack that might expose a way to circumvent security protection: &#xD;&#xA;   -&gt;'FxCop.LogExecutionError(Process)'&#xD;&#xA;   -&gt;'FxCop.LogExecutionError(Process)'&#xD;&#xA;   -&gt;'FxCop.Execute()'</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+        <Type Name="OutputParser" Kind="Class" Accessibility="Public" ExternallyVisible="True">
+         <Members>
+          <Member Name="#GetMessage(System.Xml.Linq.XElement)" Kind="Method" Static="True" Accessibility="Public" ExternallyVisible="True">
+           <Messages>
+            <Message TypeName="ConsiderPassingBaseTypesAsParameters" Category="Microsoft.Design" CheckId="CA1011" Status="Active" Created="2010-12-29 19:57:09Z" FixCategory="Breaking">
+             <Issue Certainty="50" Level="Error" Path="C:\Projects\FxCopTask\FxCopTask" File="OutputParser.cs" Line="133">Consider changing the type of parameter 'issue' in 'OutputParser.GetMessage(XElement)' from 'XElement' to its base type 'XContainer'. This method appears to only require base class members in its implementation. Suppress this violation if there is a compelling reason to require the more derived type in the method signature.</Issue>
+            </Message>
+           </Messages>
+          </Member>
+         </Members>
+        </Type>
+       </Types>
+      </Namespace>
+     </Namespaces>
+    </Module>
+   </Modules>
+  </Target>
+ </Targets>
+ <Rules>
+  <Rule TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210">
+   <Name>Assemblies should have valid strong names</Name>
+   <Description>Either the assembly has no strong name, an invalid one, or the strong name is valid only because of the computer configuration. The assembly should not be deployed in this state. The most common causes of this are: 1) The assembly's contents were modified after it was signed. 2) The signing process failed. 3) The assembly was delay-signed. 4) A registry key existed that allowed the check to pass (where it would not have otherwise).</Description>
+   <Resolution Name="NoStrongName">Sign {0} with a strong name key.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182127(VS.100).aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="95">CriticalError</MessageLevel>
+   <File Name="DesignRules.dll" Version="10.0.0.0" />
+  </Rule>
+  <Rule TypeName="ConsiderPassingBaseTypesAsParameters" Category="Microsoft.Design" CheckId="CA1011">
+   <Name>Consider passing base types as parameters</Name>
+   <Description>Using base types as parameters to methods improves re-use of these methods if you only use methods &amp; properties from the parameter's base class. E.g. use Stream instead of FileStream as a parameter when only calling Stream.Read(), this makes the method work on all kind of streams instead of just File streams.</Description>
+   <Resolution Name="Default">Consider changing the type of parameter {0} in {1} from {2} to its base type {3}. This method appears to only require base class members in its implementation. Suppress this violation if there is a compelling reason to require the more derived type in the method signature.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/3hk32yyz(VS.100).aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="50">Error</MessageLevel>
+   <File Name="DesignRules.dll" Version="10.0.0.0" />
+  </Rule>
+  <Rule TypeName="DoNotIndirectlyExposeMethodsWithLinkDemands" Category="Microsoft.Security" CheckId="CA2122">
+   <Name>Do not indirectly expose methods with link demands</Name>
+   <Description>Do not wrap a method protected by a LinkDemand with a method that does not perform a security check. A LinkDemand checks the permissions of the immediate caller rather than checking the permissions of all callers in the call stack. In this case, the permissions of the wrapper method will be checked. If the wrapper method does not, itself, check the permissions of callers higher in the call stack, malicious code might be able to execute the wrapped function even though it lacks permission to do so.</Description>
+   <Resolution Name="Default">{0} calls into {1} which has a LinkDemand. By making this call, {1} is indirectly exposed to user code. Review the following call stack that might expose a way to circumvent security protection: {2}</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182303(VS.100).aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="33">CriticalError</MessageLevel>
+   <File Name="SecurityRules.dll" Version="10.0.0.0" />
+  </Rule>
+  <Rule TypeName="MarkAssembliesWithClsCompliant" Category="Microsoft.Design" CheckId="CA1014">
+   <Name>Mark assemblies with CLSCompliantAttribute</Name>
+   <Description>Assemblies should explicitly state their CLS compliance using the CLSCompliant attribute. An assembly without this attribute is not CLS-compliant. Assemblies, modules, and types can be CLS-compliant even if some parts of the assembly, module, or type are not CLS-compliant. The following rules apply: 1) If the element is marked CLSCompliant, any noncompliant members must have the CLSCompliant attribute present with its argument set to false. 2) A comparable CLS-compliant alternative member must be supplied for each member that is not CLS-compliant.</Description>
+   <Resolution Name="Default">Mark {0} with CLSCompliant(true) because it exposes externally visible types.</Resolution>
+   <Owner />
+   <Url>http://msdn.microsoft.com/library/ms182156(VS.100).aspx</Url>
+   <Email>[none]</Email>
+   <MessageLevel Certainty="95">Error</MessageLevel>
+   <File Name="DesignRules.dll" Version="10.0.0.0" />
+  </Rule>
+ </Rules>
+ <Localized>
+  <String Key="Category">Category</String>
+  <String Key="Certainty">Certainty</String>
+  <String Key="CollapseAll">Collapse All</String>
+  <String Key="CheckId">Check Id</String>
+  <String Key="Error">Error</String>
+  <String Key="Errors">error(s)</String>
+  <String Key="ExpandAll">Expand All</String>
+  <String Key="Help">Help</String>
+  <String Key="Line">Line</String>
+  <String Key="Messages">message(s)</String>
+  <String Key="LocationNotStoredInPdb">[Location not stored in Pdb]</String>
+  <String Key="Project">Project</String>
+  <String Key="Resolution">Resolution</String>
+  <String Key="Rule">Rule</String>
+  <String Key="RuleFile">Rule File</String>
+  <String Key="RuleDescription">Rule Description</String>
+  <String Key="Source">Source</String>
+  <String Key="Status">Status</String>
+  <String Key="Target">Target</String>
+  <String Key="Warning">Warning</String>
+  <String Key="Warnings">warning(s)</String>
+  <String Key="ReportTitle">Code Analysis Report</String>
+ </Localized>
+</FxCopReport>

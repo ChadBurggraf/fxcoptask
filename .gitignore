@@ -1,4 +1,8 @@
 *.suo
 *.csproj.user
+*.vsmdi
+StyleCop.Cache
 bin/
 obj/
+Build/
+TestResults/
