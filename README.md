@@ -15,8 +15,8 @@ The only required parameter is `Assemblies`, which accepts one or more assembly 
 
   - **Dictionary** The path of a custom dictionary file to use.
   - **Executable** The path of the `FxCopCmd.exe` file, if not inferring automatically.
-  - **FailOnError** A value indicating whether to fail the build when an FxCop error is found.
-  - **FailOnWarning** A value indicating whether to fail the build when an FxCop warning is found.
+  - **FailOnError** A value indicating whether to fail the build when an FxCop error is found. Defaults to `true`.
+  - **FailOnWarning** A value indicating whether to fail the build when an FxCop warning is found. Defaults to `false`.
   - **Output** The path to save the FxCop output file to, if you would like to hold on to it after the task is finished.
   - **Rules** A set of paths to FxCop rule assemblies. This is required to have at least one value if not inferring automatically and not using `RuleSet` and `RuleSetDirectory`.
   - **RuleSet** The name of the rule set to use (such as `AllRules.ruleset`) when not inferring automatically and using rulesets instead of the `Rules` parameter.
@@ -24,6 +24,17 @@ The only required parameter is `Assemblies`, which accepts one or more assembly 
 
 Remember to define a `CODE_ANALYSIS` compilation symbol for any configurations that you want to run FxCop against if you define suppressions in source.
 
+### Minimal Example
+
+    <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+      <UsingTask AssemblyFile="FxCopTask.dll" TaskName="FxCop"/>
+      
+      <Target Name="FxCop">
+        <!-- Build your DLL first, in whichever configuration contains the CODE_ANALYSIS compilation symbols. -->
+        <FxCop Assemblies="$(OutputPath)\$(AssemblyName).dll"/>
+      </Target>
+    </Project>
+    
 ## Building
 
 The only prerequisites to building is the .NET Framework v3.5. Use MSBuild v3.5 to build from the command line.
