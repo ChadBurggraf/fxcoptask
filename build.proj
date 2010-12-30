@@ -1,20 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
-    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
-    <Dictionary>$(MSBuildProjectDirectory)\FxCopTask\CustomDictionary.xml</Dictionary>
-    <FxCopTaskDir>$(MSBuildProjectDirectory)\FxCopTask</FxCopTaskDir>
+    <AssemblyOriginatorKeyFile>$(MSBuildProjectDirectory)\Source\FxCopTask.snk</AssemblyOriginatorKeyFile>
+    <BuildDir Condition="'$(BuildDir)' == ''">$(MSBuildProjectDirectory)\Build</BuildDir>
+    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+    <EnableSigning Condition="'$(EnableSigning)' == ''">true</EnableSigning>
+    <FxCopTaskDir>$(MSBuildProjectDirectory)\Source\FxCopTask</FxCopTaskDir>
+    <SignAssembly>false</SignAssembly>
 	</PropertyGroup>
+  <PropertyGroup Condition="Exists('$(AssemblyOriginatorKeyFile)') And '$(EnableSigning)' == 'true'">
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
 
-  <Target Name="Build">
-    <MSBuild Projects="$(FxCopTaskDir)\FxCopTask.csproj" Properties="Configuration=$(Configuration)"/>
-    <CallTarget Targets="FxCop"/>
+  <Target Name="Build" DependsOnTargets="Clean;FxCop">
+    <MSBuild Projects="$(FxCopTaskDir)\FxCopTask.csproj" Properties="Configuration=$(Configuration);SignAssembly=$(SignAssembly);AssemblyOriginatorKeyFile=$(AssemblyOriginatorKeyFile)"/>
+    <MakeDir Directories="$(BuildDir)"/>
+    <Copy SourceFiles="$(FxCopTaskDir)\bin\$(Configuration)\FxCopTask.dll;$(FxCopTaskDir)\bin\$(Configuration)\FxCopTask.xml;$(FxCopTaskDir)\bin\$(Configuration)\FxCopTask.pdb" DestinationFolder="$(BuildDir)"/>
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\README.md" DestinationFolder="$(BuildDir)"/>
   </Target>
 
-  <UsingTask AssemblyFile="$(FxCopTaskDir)\bin\$(Configuration)\FxCopTask.dll" TaskName="FxCop"/>
+  <Target Name="Clean">
+    <MSBuild Projects="$(FxCopTaskDir)\FxCopTask.csproj" Properties="Configuration=$(Configuration)" Targets="Clean"/>
+    <RemoveDir Directories="$(BuildDir)"/>
+  </Target>
+
+  <UsingTask AssemblyFile="$(FxCopTaskDir)\bin\Debug\FxCopTask.dll" TaskName="FxCop"/>
 
   <Target Name="FxCop">
     <MSBuild Projects="$(FxCopTaskDir)\FxCopTask.csproj" Properties="Configuration=Debug"/>
-    <FxCop Assemblies="$(FxCopTaskDir)\bin\$(Configuration)\FxCopTask.dll"/>
+    <FxCop Assemblies="$(FxCopTaskDir)\bin\Debug\FxCopTask.dll"/>
   </Target>
 </Project>
