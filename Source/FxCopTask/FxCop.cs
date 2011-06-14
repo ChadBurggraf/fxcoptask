@@ -125,7 +125,7 @@ namespace FxCopTask
         /// <returns>True if the task succeeded, false otherwise.</returns>
         [PermissionSetAttribute(SecurityAction.Demand, Name = "FullTrust")]
         [SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", Justification = "There is no way I'm globalizing this.")]
-        [SuppressMessage("Microsoft.Usage", "CA2204:LiteralsShouldBeSpelledCorrectly", Justification = "It's funny that FxCop is not in the dictionary.")]
+        [SuppressMessage("Microsoft.Naming", "CA2204:LiteralsShouldBeSpelledCorrectly", Justification = "It's funny that FxCop is not in the dictionary.")]
         public override bool Execute()
         {
             bool success = false;
@@ -150,8 +150,18 @@ namespace FxCopTask
                             this.Output = new TaskItem(Path.GetTempFileName());
                             deleteOutput = true;
                         }
+                        else
+                        {
+                            string directory = Path.GetDirectoryName(this.Output.GetMetadata("FullPath"));
+
+                            if (!Directory.Exists(directory))
+                            {
+                                Directory.CreateDirectory(directory);
+                            }
+                        }
 
                         StringBuilder assemblyArgs = new StringBuilder();
+                        Log.LogMessage(MessageImportance.High, "FxCop location: '{0}'.", this.Executable.GetMetadata("FullPath"));
 
                         foreach (ITaskItem assembly in this.Assemblies)
                         {
@@ -166,18 +176,11 @@ namespace FxCopTask
                             {
                                 process.WaitForExit();
 
-                                if (process.ExitCode == 0)
-                                {
-                                    Logger errorLogger = (errorCode, file, lineNumber, message) => Log.LogError("FxCop", errorCode, null, file, lineNumber, 0, 0, 0, message);
-                                    Logger warningLogger = (errorCode, file, lineNumber, message) => Log.LogWarning("FxCop", errorCode, null, file, lineNumber, 0, 0, 0, message);
-                                    OutputParser parser = new OutputParser(this.Output.GetMetadata("FullPath"), errorLogger, warningLogger);
+                                Logger errorLogger = (errorCode, file, lineNumber, message) => Log.LogError("FxCop", errorCode, null, file, lineNumber, 0, 0, 0, message);
+                                Logger warningLogger = (errorCode, file, lineNumber, message) => Log.LogWarning("FxCop", errorCode, null, file, lineNumber, 0, 0, 0, message);
+                                OutputParser parser = new OutputParser(this.Output.GetMetadata("FullPath"), errorLogger, warningLogger);
 
-                                    success = parser.Parse(this.FailOnError, this.FailOnWarning);
-                                }
-                                else
-                                {
-                                    this.LogExecutionError(process);
-                                }
+                                success = parser.Parse(this.FailOnError, this.FailOnWarning);
                             }
                             else 
                             {
@@ -240,28 +243,6 @@ namespace FxCopTask
             };
 
             return new Process() { StartInfo = start };
-        }
-
-        /// <summary>
-        /// Logs a process execution error for the given process to the build engine.
-        /// </summary>
-        /// <param name="process">The process to log the execution error for.</param>
-        [SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", Justification = "There is no way I'm globalizing this.")]
-        private void LogExecutionError(Process process)
-        {
-            string line;
-
-            while (null != (line = process.StandardOutput.ReadLine()))
-            {
-                Log.LogMessage(MessageImportance.High, line);
-            }
-
-            while (null != (line = process.StandardError.ReadLine()))
-            {
-                Log.LogMessage(MessageImportance.High, line);
-            }
-
-            Log.LogError("FxCop exited with code {0}.", process.ExitCode);
         }
     }
 }

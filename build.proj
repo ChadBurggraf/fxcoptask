@@ -2,6 +2,7 @@
 <Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
     <AssemblyOriginatorKeyFile>$(MSBuildProjectDirectory)\Source\FxCopTask.snk</AssemblyOriginatorKeyFile>
+    <ArtifactDir Condition="'$(ArtifactDir)' == ''">$(MSBuildProjectDirectory)\Artifacts</ArtifactDir>
     <BuildDir Condition="'$(BuildDir)' == ''">$(MSBuildProjectDirectory)\Build</BuildDir>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <EnableSigning Condition="'$(EnableSigning)' == ''">true</EnableSigning>
@@ -27,7 +28,8 @@
   <UsingTask AssemblyFile="$(FxCopTaskDir)\bin\Debug\FxCopTask.dll" TaskName="FxCop"/>
 
   <Target Name="FxCop">
+    <MakeDir Directories="$(ArtifactDir)"/>
     <MSBuild Projects="$(FxCopTaskDir)\FxCopTask.csproj" Properties="Configuration=Debug"/>
-    <FxCop Assemblies="$(FxCopTaskDir)\bin\Debug\FxCopTask.dll"/>
+    <FxCop Assemblies="$(FxCopTaskDir)\bin\Debug\FxCopTask.dll" Output="$(ArtifactDir)\FxCop.xml"/>
   </Target>
 </Project>
