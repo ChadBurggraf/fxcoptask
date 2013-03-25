@@ -94,14 +94,10 @@ namespace FxCopTask
         {
             bool found = false;
             string executable = null, rulesDirectory = null, ruleSetDirectory = null;
-            string visualStudioToolsPath = Environment.GetEnvironmentVariable("VS100COMNTOOLS");
 
-            if (!String.IsNullOrEmpty(visualStudioToolsPath))
+            if (!(found = FindVisualStudio("VS110COMNTOOLS", out executable, out rulesDirectory, out ruleSetDirectory)))
             {
-                executable = Path.Combine(visualStudioToolsPath, @"..\..\Team Tools\Static Analysis Tools\FxCop\FxCopCmd.exe");
-                rulesDirectory = Path.Combine(visualStudioToolsPath, @"..\..\Team Tools\Static Analysis Tools\FxCop\Rules");
-                ruleSetDirectory = Path.Combine(visualStudioToolsPath, @"..\..\Team Tools\Static Analysis Tools\Rule Sets");
-                found = File.Exists(executable) && Directory.Exists(rulesDirectory);
+                found = FindVisualStudio("VS100COMNTOOLS", out executable, out rulesDirectory, out ruleSetDirectory);
             }
 
             if (!found)
@@ -133,8 +129,27 @@ namespace FxCopTask
                 Executable = found ? Path.GetFullPath(executable) : null,
                 Found = found,
                 RulesDirectory = found ? Path.GetFullPath(rulesDirectory) : null,
-                RuleSetDirectory = found && !String.IsNullOrEmpty(ruleSetDirectory) && Directory.Exists(ruleSetDirectory) ? Path.GetFileName(ruleSetDirectory) : null
+                RuleSetDirectory = found && !String.IsNullOrEmpty(ruleSetDirectory) && Directory.Exists(ruleSetDirectory) ? Path.GetFullPath(ruleSetDirectory) : null
             };
+        }
+
+        private static bool FindVisualStudio(string env, out string executable, out string rulesDirectory, out string ruleSetDirectory)
+        {
+            executable = null;
+            rulesDirectory = null; 
+            ruleSetDirectory = null;
+            bool found = false;
+            string visualStudioToolsPath = Environment.GetEnvironmentVariable(env);
+
+            if (!String.IsNullOrEmpty(visualStudioToolsPath))
+            {
+                executable = Path.Combine(visualStudioToolsPath, @"..\..\Team Tools\Static Analysis Tools\FxCop\FxCopCmd.exe");
+                rulesDirectory = Path.Combine(visualStudioToolsPath, @"..\..\Team Tools\Static Analysis Tools\FxCop\Rules");
+                ruleSetDirectory = Path.Combine(visualStudioToolsPath, @"..\..\Team Tools\Static Analysis Tools\Rule Sets");
+                found = File.Exists(executable) && Directory.Exists(rulesDirectory);
+            }
+
+            return found;
         }
     }
 }

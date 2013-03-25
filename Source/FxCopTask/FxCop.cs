@@ -16,6 +16,7 @@ namespace FxCopTask
     using System.Linq;
     using System.Security.Permissions;
     using System.Text;
+    using System.Text.RegularExpressions;
     using Microsoft.Build.Framework;
     using Microsoft.Build.Utilities;
 
@@ -206,6 +207,7 @@ namespace FxCopTask
         /// </summary>
         /// <param name="assemblyArgs">A string of prepared assembly arguments.</param>
         /// <returns>The created process.</returns>
+        [SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", Justification = "There is no way I'm globalizing this.")]
         [SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope", Justification = "The object is disposed by the caller of this method.")]
         private Process CreateProcess(string assemblyArgs)
         {
@@ -218,7 +220,11 @@ namespace FxCopTask
 
             if (!String.IsNullOrEmpty(this.RuleSet) && this.RuleSetDirectory != null)
             {
-                args.AppendFormat(CultureInfo.InvariantCulture, @" /rs:""={0}"" /rsd:""{1}""", this.RuleSet, this.RuleSetDirectory.GetMetadata("FullPath"));
+                args.AppendFormat(
+                    CultureInfo.InvariantCulture, 
+                    @" /rs:""={0}"" /rsd:""{1}""", 
+                    this.RuleSet, 
+                    Regex.Replace(this.RuleSetDirectory.GetMetadata("FullPath"), @"\\$", String.Empty));
             }
             else
             {
@@ -232,6 +238,8 @@ namespace FxCopTask
             {
                 args.AppendFormat(CultureInfo.InvariantCulture, @" /dic:""{0}""", this.Dictionary.GetMetadata("FullPath"));
             }
+
+            Log.LogMessage("FxCop arguments: '{0}'", args);
 
             ProcessStartInfo start = new ProcessStartInfo(this.Executable.GetMetadata("FullPath"), args.ToString())
             {
