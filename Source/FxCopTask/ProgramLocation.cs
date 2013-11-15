@@ -92,13 +92,11 @@ namespace FxCopTask
         /// <returns>The FxCop location.</returns>
         public static ProgramLocation FindDefault()
         {
-            bool found = false;
             string executable = null, rulesDirectory = null, ruleSetDirectory = null;
 
-            if (!(found = FindVisualStudio("VS110COMNTOOLS", out executable, out rulesDirectory, out ruleSetDirectory)))
-            {
-                found = FindVisualStudio("VS100COMNTOOLS", out executable, out rulesDirectory, out ruleSetDirectory);
-            }
+            bool found = FindVisualStudio("VS120COMNTOOLS", out executable, out rulesDirectory, out ruleSetDirectory)
+                || FindVisualStudio("VS110COMNTOOLS", out executable, out rulesDirectory, out ruleSetDirectory)
+                || FindVisualStudio("VS100COMNTOOLS", out executable, out rulesDirectory, out ruleSetDirectory);
 
             if (!found)
             {
